@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  postgresql:
+    image: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: oms
+      PGDATA: /var/lib/postgresql/oms
+    volumes:
+      - omsdata:/var/lib/postgresql/oms
+    ports:
+      - "5432:5432"
+
+volumes:
+  omsdata:
