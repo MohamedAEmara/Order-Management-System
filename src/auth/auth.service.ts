@@ -48,7 +48,7 @@ export class AuthService {
       data: user,
     });
 
-    // Execlude passport from user response.
+    // Execlude passwort from user response.
     delete newUser.password;
     return newUser;
   }
