@@ -12,3 +12,53 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum orderStatus {
+  pending
+  processing
+  shipped
+  delivered
+  canceled
+}
+
+enum orderMethod {
+  cash
+  credit
+}
+
+model User {
+  userId    String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  address   String?
+  phone     String
+  age       Int?
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  productId   String   @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  stock       Int
+  createdAt   DateTime @default(now())
+}
+
+model Order {
+  orderId         String      @id @default(uuid())
+  orderDate       DateTime    @default(now())
+  status          orderStatus   // This could be pending, processing, shipped, delivered, canceled
+  totalAmount     Float
+  shippingAddress String
+  billingAddress  String?
+  paymentMethod   String        // Options: credit, cash
+  createdAt       DateTime    @default(now())
+}
+
+model Cart {
+  cartId String @id @default(uuid())
+  userId String   // Foreign key referencing the user who owns the cart
+  items  Json     // JSON object to store product IDs and quantities
+}
