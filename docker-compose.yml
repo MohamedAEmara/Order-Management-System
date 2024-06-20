@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
-      POSTGRES_DB: om2
+      POSTGRES_DB: om3
       PGDATA: /var/lib/postgresql/oms
     volumes:
       - omsdata:/var/lib/postgresql/oms

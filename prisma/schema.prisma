@@ -26,10 +26,17 @@ enum orderMethod {
   credit
 }
 
+model CartItem {
+  cartItemId String @id @default(uuid())
+  cart     Cart  @relation(fields: [cartId], references: [cartId])
+  cartId String @unique
+  productId String
+  quantity  Int
+}
 
 model Cart {
   cartId String   @id @default(uuid())
-  items  String[] // To track ids of the products in the cart
+  items  CartItem[] // To track ids of the products in the cart
   user User?
 }
 
@@ -44,7 +51,6 @@ model User {
   createdAt DateTime @default(now())
   cart Cart @relation(fields: [cartId], references:[cartId])
   cartId    String @unique
-
 }
 
 model Product {

@@ -47,7 +47,9 @@ export class AuthService {
     // Create an empty cart and attach cartId to the newly created user
     const newCart = await this.prisma.cart.create({
       data: {
-        items: [], // Initialize the cart items as an empty array
+        items: {
+          create: [],
+        },
       },
     });
 
@@ -57,6 +59,7 @@ export class AuthService {
         cartId: newCart.cartId,
       },
     });
+
     // Execlude passwort from user response.
     delete newUser.password;
     return newUser;
