@@ -26,6 +26,13 @@ enum orderMethod {
   credit
 }
 
+
+model Cart {
+  cartId String   @id @default(uuid())
+  items  String[] // To track ids of the products in the cart
+  user User?
+}
+
 model User {
   userId    String   @id @default(uuid())
   name      String
@@ -35,6 +42,9 @@ model User {
   phone     String
   age       Int?
   createdAt DateTime @default(now())
+  cart Cart @relation(fields: [cartId], references:[cartId])
+  cartId    String @unique
+
 }
 
 model Product {
@@ -49,16 +59,10 @@ model Product {
 model Order {
   orderId         String      @id @default(uuid())
   orderDate       DateTime    @default(now())
-  status          orderStatus   // This could be pending, processing, shipped, delivered, canceled
+  status          orderStatus // This could be pending, processing, shipped, delivered, canceled
   totalAmount     Float
   shippingAddress String
   billingAddress  String?
-  paymentMethod   String        // Options: credit, cash
+  paymentMethod   String // Options: credit, cash
   createdAt       DateTime    @default(now())
-}
-
-model Cart {
-  cartId String @id @default(uuid())
-  userId String   // Foreign key referencing the user who owns the cart
-  items  Json     // JSON object to store product IDs and quantities
 }

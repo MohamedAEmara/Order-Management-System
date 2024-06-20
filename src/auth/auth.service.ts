@@ -44,10 +44,19 @@ export class AuthService {
     // Change the password with the hashed one to store in DB
     user.password = await bcrypt.hash(user.password, salt);
 
-    const newUser = await this.prisma.user.create({
-      data: user,
+    // Create an empty cart and attach cartId to the newly created user
+    const newCart = await this.prisma.cart.create({
+      data: {
+        items: [], // Initialize the cart items as an empty array
+      },
     });
 
+    const newUser = await this.prisma.user.create({
+      data: {
+        ...user,
+        cartId: newCart.cartId,
+      },
+    });
     // Execlude passwort from user response.
     delete newUser.password;
     return newUser;
