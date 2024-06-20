@@ -78,9 +78,15 @@ export class CartService {
       return updatedCart;
     } else {
       // increment the quantity of that productId by the needed quantity
-      await this.prisma.cartItem.update({
+      const existingCartItem = await this.prisma.cartItem.findFirst({
         where: {
           cartId: user.cartId,
+          productId,
+        },
+      });
+      await this.prisma.cartItem.update({
+        where: {
+          cartItemId: existingCartItem.cartItemId,
         },
         data: {
           quantity: {
@@ -99,5 +105,30 @@ export class CartService {
       });
       return updatedCart;
     }
+  }
+
+  async viewCart(userId: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        userId,
+      },
+    });
+    if (!user) {
+      throw new HttpException(
+        'There is no user with this ID',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const cart = await this.prisma.cart.findFirst({
+      where: {
+        cartId: user.cartId,
+      },
+      include: {
+        items: true,
+      },
+    });
+    console.log(cart);
+    console.log('-=-=-=-');
+    return cart;
   }
 }
