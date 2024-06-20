@@ -4,9 +4,6 @@ export class AddToCartDTO {
   @IsString()
   productId: string;
 
-  @IsString()
-  userId: string;
-
   @IsNumber()
   quantity: number;
 }

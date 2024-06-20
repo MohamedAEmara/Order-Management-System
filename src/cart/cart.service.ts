@@ -6,9 +6,8 @@ import { AddToCartDTO } from './dto/add-to-cart.dto';
 export class CartService {
   constructor(private prisma: PrismaService) {}
 
-  async addToCart(addToCartDto: AddToCartDTO) {
+  async addToCart(addToCartDto: AddToCartDTO, userId: string) {
     const quantity = addToCartDto.quantity;
-    const userId = addToCartDto.userId;
     const productId = addToCartDto.productId;
 
     // Check if the quantity is invalid value
@@ -76,7 +75,6 @@ export class CartService {
           },
         },
       });
-      console.log(updatedCart);
       return updatedCart;
     } else {
       // increment the quantity of that productId by the needed quantity
