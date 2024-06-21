@@ -136,6 +136,7 @@ export class CartService {
               },
             },
           },
+          orders: true,
         },
       });
       return updatedCart;
@@ -168,6 +169,7 @@ export class CartService {
             },
           },
         },
+        orders: true,
       },
     });
     return cart;
@@ -210,6 +212,7 @@ export class CartService {
             },
           },
         },
+        orders: true,
       },
     });
 
@@ -262,6 +265,7 @@ export class CartService {
             },
           },
         },
+        orders: true,
       },
     });
   }
@@ -312,6 +316,7 @@ export class CartService {
               },
             },
           },
+          orders: true,
         },
       });
     } else {

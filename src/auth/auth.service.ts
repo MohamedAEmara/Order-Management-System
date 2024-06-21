@@ -50,6 +50,9 @@ export class AuthService {
         items: {
           create: [],
         },
+        orders: {
+          create: [],
+        }
       },
     });
 

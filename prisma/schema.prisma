@@ -33,14 +33,13 @@ model CartItem {
   product    Product @relation(fields: [productId], references: [productId])
   productId  String
   quantity   Int
-  Order      Order?  @relation(fields: [orderId], references: [orderId])
-  orderId    String?
 }
 
 model Cart {
   cartId String     @id @default(uuid())
   items  CartItem[]
   user   User?
+  orders Order[]
 }
 
 model User {
@@ -75,5 +74,6 @@ model Order {
   billingAddress  String?
   paymentMethod   String
   createdAt       DateTime    @default(now())
-  items           CartItem[]
+  cart            Cart        @relation(fields: [cartId], references: [cartId])
+  cartId          String
 }
