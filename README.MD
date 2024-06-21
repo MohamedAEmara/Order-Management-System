@@ -52,7 +52,7 @@ Before getting started, ensure you have installed the following:
   
 ## Endpoints
 
-You can check endpoints & documentation on Postman from [here]()
+You can check endpoints & documentation on Postman from [here](https://documenter.getpostman.com/view/29997574/2sA3XWbdQF)
 
 ## Technology Stack
 
@@ -63,7 +63,7 @@ The **Order Management System** uses the following technologies and tools:
 - **NestJS:** A progressive Node.js framework for building efficient, reliable, and scalable server-side applications.
 - **PostgreSQL:** A powerful, open-source relational database used for storing users, products, orders, and cart information.
 - **Prisma:** A modern database toolkit and ORM for Node.js and TypeScript.
-
+- **Docker:** A platform for developing, shipping, and running applications in isolated containers to ensure consistency across different environments.
 #### Documentation
 
 - **Postman:** Used for documentation and to provide a collection for API requests.
