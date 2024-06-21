@@ -233,12 +233,20 @@ export class CartService {
         productId,
       },
     });
+    const existingCartItem = await this.prisma.cartItem.findFirst({
+      where: {
+        cartId: user.cartId,
+        productId,
+      },
+    });
+
     if (quantity >= product.stock) {
       throw new HttpException(
         'There is no sufficient amount of this product in stock',
         HttpStatus.BAD_REQUEST,
       );
     } else {
+      // Calclate the difference between quantity & existingCartItem.quantity
       // Update the remaining in stock product
       await this.prisma.product.update({
         where: {
@@ -246,11 +254,20 @@ export class CartService {
         },
         data: {
           stock: {
-            increment: -1 * quantity,
+            increment: -1 * (quantity - existingCartItem.quantity),
           },
         },
       });
     }
+    // increment the quantity of that productId by the needed quantity
+    await this.prisma.cartItem.update({
+      where: {
+        cartItemId: existingCartItem.cartItemId,
+      },
+      data: {
+        quantity,
+      },
+    });
     return await this.prisma.cart.findFirst({
       where: {
         cartId: user.cartId,
