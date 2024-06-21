@@ -38,6 +38,25 @@ export class CartService {
       throw new HttpException('Inavlid product id!', HttpStatus.BAD_REQUEST);
     }
 
+    // Validate sufficient amount of product before adding to cart
+    if (quantity >= product.stock) {
+      throw new HttpException(
+        'There is no sufficient amount of this product in stock',
+        HttpStatus.BAD_REQUEST,
+      );
+    } else {
+      // Update the remaining in stock product
+      await this.prisma.product.update({
+        where: {
+          productId: product.productId,
+        },
+        data: {
+          stock: {
+            increment: -1 * quantity,
+          },
+        },
+      });
+    }
     // Check if the item already exists in the cart?
     const cart = await this.prisma.cart.findFirst({
       where: {
