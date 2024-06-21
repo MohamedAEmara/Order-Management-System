@@ -87,115 +87,89 @@ export class OrdersService {
     });
 
     return newOrder;
-    // I want to get the orders array linked to cart with (orders) field
-    // const newCart = await this.prisma.order.findFirst({
-    //     include: {
-    //         cart
-    //     }
-    // })
-    // const order = await this.prisma.order.create({
-    //   data: {
-    //     shippingAddress,
-    //     billingAddress,
-    //     status: 'pending',
-    //     paymentMethod: method,
-    //     totalAmount,
+  }
 
-    // },
+  async getOrder(orderId: string, userId: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        userId,
+      },
+    });
+    if (!user) {
+      throw new HttpException(
+        'There is no user with this ID',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const order = await this.prisma.order.findFirst({
+      where: {
+        orderId,
+      },
+    });
 
-    // });
-    // const newOrder = await this.prisma.order.create({
-    //   data: {
-    //     // cart: { connect: { cartId: user.cartId } }, // Connects the order to the cart
-    //     status: 'pending', // Set initial order status (e.g., pending)
-    //     paymentMethod: method, // Specify payment method
-    //     shippingAddress: shippingAddress, // Customer's shipping address
-    //     billingAddress: billingAddress, // Customer's billing address (optional)
-    //     totalAmount: totalAmount,
-    //     // items: {
-    //     //   connect: cart.items.map((item) => ({
-    //     //     where: { cartItemId: item.cartItemId },
-    //     //   })),
-    //     // }, // Connects order to each cart item
-    //   },
-    // });
+    // Validate that this order belongs to this user
+    if (!order || user.cartId !== order.cartId) {
+      throw new HttpException(
+        'There is no order with this ID',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-    // await this.prisma.cart.update({
-    //     where: {
-    //       cartId: cart.cartId,
-    //     },
-    //     data: {
-    //       items: {
-    //         deleteMany: {},
-    //       },
-    //     },
-    //   });
-    // const newCart = await this.prisma.cart.findFirst({
-    //     where: {
-    //         cartId: user.cartId,
-    //     },
-    //     include: {
-    //         items: true,
-    //     }
-    // });
-    // console.log(newCart);
-    // console.log("-=-=-=-=");
-    // console.log(newOrder);
-    // const test = await this.prisma.cart.findFirst({
-    //   where: {
-    //     cartId: user.cartId,
-    //   },
-    //   include: {
-    //     items: {
-    //       select: {
-    //         orderId: true,
-    //       },
-    //     },
-    //   },
-    // });
+    return order;
+  }
 
-    // const updatedOrder = await this.prisma.order.update({
-    //   where: {
-    //     orderId: order.orderId,
-    //   },
-    //   //   include: {
-    //   //     items: {
-    //   //       include: {
-    //   //         cart: {
-    //   //           include: {
-    //   //             user: {
-    //   //               select: {
-    //   //                 userId: true,
-    //   //               },
-    //   //             },
-    //   //           },
-    //   //         },
-    //   //       },
-    //   //     },
-    //   //   },
-    //   data: {
-    //     status: 'processing',
-    //     items: {
-    //       connect: {
-    //         cart:
-    //       },
-    //     },
-    //   },
-    // });
-    // console.log(updatedOrder);
+  async updateOrder(
+    orderId: string,
+    userId: string,
+    status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'canceled',
+  ) {
+    // Validate status value
+    const orderStatus = [
+      'pending',
+      'processing',
+      'shipped',
+      'delivered',
+      'canceled',
+    ];
+    if (!orderStatus.includes(status)) {
+      throw new HttpException(
+        'status must be pending, processing, shipped, delivered, or canceled',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const user = await this.prisma.user.findFirst({
+      where: {
+        userId,
+      },
+    });
+    if (!user) {
+      throw new HttpException(
+        'There is no user with this ID',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const order = await this.prisma.order.findFirst({
+      where: {
+        orderId,
+      },
+    });
 
-    // console.log(test);
-    // Update cart
-    // await this.prisma.cart.update({
-    //   where: {
-    //     cartId: user.cartId,
-    //   },
-    //   data: {
-    //     items: {
-    //         connect:
-    //     }
-    //   },
-    // });
-    // return test;
+    // Validate that this order belongs to this user
+    if (!order || user.cartId !== order.cartId) {
+      throw new HttpException(
+        'There is no order with this ID',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const updatedOrder = await this.prisma.order.update({
+      where: {
+        orderId,
+      },
+      data: {
+        status,
+      },
+    });
+    return updatedOrder;
   }
 }

@@ -52,7 +52,7 @@ export class AuthService {
         },
         orders: {
           create: [],
-        }
+        },
       },
     });
 
