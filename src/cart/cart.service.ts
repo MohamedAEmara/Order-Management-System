@@ -84,7 +84,15 @@ export class CartService {
           cartId: user.cartId,
         },
         include: {
-          items: true,
+          items: {
+            include: {
+              product: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         },
         data: {
           items: {
@@ -256,5 +264,61 @@ export class CartService {
         },
       },
     });
+  }
+
+  async removeFromCart(productId: string, userId: string) {
+    // Check if the user exists
+    const user = await this.prisma.user.findFirst({
+      where: {
+        userId,
+      },
+    });
+    if (!user) {
+      throw new HttpException('Inavlid user id!', HttpStatus.BAD_REQUEST);
+    }
+
+    // Check if the product exists in the cart
+    const cart = await this.prisma.cart.findFirst({
+      where: {
+        cartId: user.cartId,
+      },
+      include: {
+        items: true,
+      },
+    });
+    const existingCartItem = cart.items.find(
+      (item) => item.productId === productId,
+    );
+
+    if (existingCartItem) {
+      // remove this cartItem
+      await this.prisma.cartItem.delete({
+        where: {
+          cartItemId: existingCartItem.cartItemId,
+        },
+      });
+      // return the updatedCart after removal
+      return await this.prisma.cart.findFirst({
+        where: {
+          cartId: user.cartId,
+        },
+        include: {
+          items: {
+            include: {
+              product: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    } else {
+      throw new HttpException(
+        'There is no product with this ID in your cart!',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

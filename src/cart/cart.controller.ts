@@ -12,6 +12,7 @@ import {
   Param,
   ParseUUIDPipe,
   Put,
+  Delete,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { AddToCartDTO } from './dto/add-to-cart.dto';
@@ -90,6 +91,29 @@ export class CartController {
     try {
       const userId = req.user.userId;
       return await this.cartService.updateCart(updateCartDto, userId);
+    } catch (err) {
+      console.log(err);
+      return {
+        status: err.status || 500,
+        message: err.response || 'An error occurred while updating the product',
+      };
+    }
+  }
+
+  @Delete('remove')
+  @UseGuards(AuthGuard)
+  async removeFromCart(
+    @Request()
+    req,
+    @Body()
+    removeProductDto: Pick<AddToCartDTO, 'productId'>,
+  ) {
+    try {
+      const userId = req.user.userId;
+      return await this.cartService.removeFromCart(
+        removeProductDto.productId,
+        userId,
+      );
     } catch (err) {
       console.log(err);
       return {
