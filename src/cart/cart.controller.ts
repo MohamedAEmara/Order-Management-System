@@ -11,6 +11,7 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
+  Put,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { AddToCartDTO } from './dto/add-to-cart.dto';
@@ -68,8 +69,27 @@ export class CartController {
         );
       }
       const cart = await this.cartService.viewCart(userId);
-      console.log(cart);
       return cart;
+    } catch (err) {
+      console.log(err);
+      return {
+        status: err.status || 500,
+        message: err.response || 'An error occurred while updating the product',
+      };
+    }
+  }
+
+  @Put()
+  @UseGuards(AuthGuard)
+  async updateCart(
+    @Request()
+    req,
+    @Body()
+    updateCartDto: AddToCartDTO,
+  ) {
+    try {
+      const userId = req.user.userId;
+      return await this.cartService.updateCart(updateCartDto, userId);
     } catch (err) {
       console.log(err);
       return {

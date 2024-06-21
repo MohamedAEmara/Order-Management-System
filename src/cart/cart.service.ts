@@ -119,7 +119,15 @@ export class CartService {
           cartId: user.cartId,
         },
         include: {
-          items: true,
+          items: {
+            include: {
+              product: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         },
       });
       return updatedCart;
@@ -143,11 +151,110 @@ export class CartService {
         cartId: user.cartId,
       },
       include: {
-        items: true,
+        items: {
+          include: {
+            product: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
-    console.log(cart);
-    console.log('-=-=-=-');
     return cart;
+  }
+
+  async updateCart(updateCartDto: AddToCartDTO, userId: string) {
+    const quantity = updateCartDto.quantity;
+    const productId = updateCartDto.productId;
+
+    // Check if the quantity is invalid value
+    if (!quantity || quantity <= 0) {
+      throw new HttpException(
+        'Invalid quantity! please add a positive number of items.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // Check if the user exists
+    const user = await this.prisma.user.findFirst({
+      where: {
+        userId,
+      },
+    });
+    if (!user) {
+      throw new HttpException('Inavlid user id!', HttpStatus.BAD_REQUEST);
+    }
+
+    // Check if the product exists in the cart
+    const cart = await this.prisma.cart.findFirst({
+      where: {
+        cartId: user.cartId,
+      },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const existingProduct = cart.items.find(
+      (product) => product.productId === productId,
+    );
+
+    if (!existingProduct) {
+      throw new HttpException(
+        'There is no product with this ID in your cart!',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // Validate sufficient amount of product before adding to cart
+    const product = await this.prisma.product.findFirst({
+      where: {
+        productId,
+      },
+    });
+    if (quantity >= product.stock) {
+      throw new HttpException(
+        'There is no sufficient amount of this product in stock',
+        HttpStatus.BAD_REQUEST,
+      );
+    } else {
+      // Update the remaining in stock product
+      await this.prisma.product.update({
+        where: {
+          productId: product.productId,
+        },
+        data: {
+          stock: {
+            increment: -1 * quantity,
+          },
+        },
+      });
+    }
+    return await this.prisma.cart.findFirst({
+      where: {
+        cartId: user.cartId,
+      },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 }
