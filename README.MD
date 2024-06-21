@@ -12,6 +12,7 @@ Order Management System (OMS) is an API that allows users to manage their orders
   - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Schema Diagram for DB](#schema-diagram-for-db)
+  - [Video Demo](#video-demo)
   - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
@@ -25,6 +26,8 @@ Order Management System (OMS) is an API that allows users to manage their orders
 ## Schema Diagram for DB
 ![schema](docs/schema.png)
 
+## Video Demo
+  https://www.youtube.com/watch?v=dCHf8gvBj6Y
 ## Getting Started
 
 ### Prerequisites
